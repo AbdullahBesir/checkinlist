@@ -8,25 +8,17 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self' https://api.github.com; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'self'">
   <title>STSO 30. Komite · Seçim Kontrol Listesi</title>
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./styles.css">
-  <script type="module" src="./app.mjs?v=20261121-fetch-receiver"></script>
+  <link rel="stylesheet" href="./styles.css?v=20261121-mobile-simple">
+  <script type="module" src="./app.mjs?v=20261121-mobile-simple"></script>
 </head>
 <body>
   <div id="loading" class="loading" role="status"><span class="brand-mark">30<span>STSO</span></span><p>Kontrol listesi hazırlanıyor…</p></div>
 
   <section id="login-screen" class="login-screen" hidden>
-    <header class="login-top"><a class="brand" href="./"><span class="brand-mark">30<span>STSO</span></span><span>STSO 30. KOMİTE<small>SEÇİM GÜNÜ ÇALIŞMA ALANI</small></span></a><span class="date-label">22 KASIM 2026</span></header>
     <main class="login-layout">
-      <div class="login-copy">
-        <span class="eyebrow"><span class="small-line"></span> SEÇİM GÜNÜ, BİRLİKTE TAKİPTE</span>
-        <h1>Aynı liste.<br>Herkes için<br><em>güncel.</em></h1>
-        <p>Gelenleri işaretleyin, belge kontrolünü tamamlayın, notunuzu ekleyin. Ekibiniz aynı kayıt üzerinden çalışsın.</p>
-        <div class="login-detail"><span class="outline-check">✓</span><div>Bir ortak kontrol listesi<small>Geldi · Belge · Oy · Not</small></div></div>
-      </div>
       <div class="login-card">
-        <span class="card-kicker">EKİP GİRİŞİ</span>
-        <h2>Hoş geldiniz.</h2>
-        <p>Kontrol listesine ulaşmak için giriş yapın.</p>
+        <h1>Ekip girişi</h1>
+        <p>Ortak kontrol listesine giriş yapın.</p>
         <form id="login-form">
           <label for="username">Kullanıcı adı</label>
           <select id="username" name="username" autocomplete="username" required><option value="">Kullanıcı seçin</option></select>
@@ -39,21 +31,22 @@
         <p class="login-footnote">Ortak kayıtlar girişten sonra yüklenir.</p>
       </div>
     </main>
-    <footer class="login-footer"><span>STSO 30. KOMİTE</span><span>22 Kasım 2026 · Seçim kontrol listesi</span></footer>
   </section>
 
   <div id="app-screen" hidden>
-    <header class="app-top"><div class="top-inner"><a class="brand" href="./"><span class="brand-mark compact">30<span>STSO</span></span><span>STSO 30. KOMİTE<small>SEÇİM KONTROL LİSTESİ</small></span></a><div class="top-actions"><span id="connection" class="connection" data-state="connecting"><i></i><span>Bağlanıyor</span></span><span class="top-divider"></span><span id="current-user" class="current-user"></span><button id="logout" class="text-button" type="button">Çıkış</button></div></div></header>
     <main class="workspace">
-      <div class="page-heading"><div><span class="eyebrow">22 KASIM 2026 · PAZAR</span><h1>Seçim günü kontrol listesi<span>.</span></h1><p>Tek liste, ortak takip. Her işaret ekip arkadaşlarınıza da yansır.</p></div><div class="heading-actions"><button id="activity-open" class="button secondary" type="button">Son işlemler</button><button id="export" class="button secondary" type="button">Yedek indir</button><button id="print" class="icon-button" type="button" aria-label="Listeyi yazdır" title="Listeyi yazdır"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M7 8V3h10v5M7 17H4V9h16v8h-3M7 14h10v7H7z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></button></div></div>
-      <section class="stats" aria-label="Liste özeti"><div class="stat"><span>Toplam firma</span><strong id="stat-total">—</strong><small>Ortak kayıt listesi</small></div><div class="stat"><span>Geldi</span><strong id="stat-arrived">—</strong><small id="stat-waiting">—</small></div><div class="stat"><span>Belge kontrolü</span><strong id="stat-document">—</strong><small>Kontrol edildi</small></div><div class="stat accent-stat"><span>Oy kullandı</span><strong id="stat-voted">—</strong><small id="stat-percent">—</small><div class="progress-track"><div id="progress-value"></div></div></div></section>
+      <section class="summary" aria-label="Katılım özeti">
+        <div class="summary-top"><span>Oy kullandı <strong id="stat-voted">—</strong><span class="summary-separator">/</span><span id="stat-total">—</span></span><strong id="stat-percent" class="summary-percent">—</strong></div>
+        <progress id="progress-value" class="participation-progress" value="0" max="100" aria-label="Oy kullanma oranı">0%</progress>
+        <div class="summary-counts"><span>Geldi <strong id="stat-arrived">—</strong></span><span>Beklenen <strong id="stat-waiting">—</strong></span><span>Belge <strong id="stat-document">—</strong></span></div>
+      </section>
       <section class="list-panel" aria-labelledby="list-heading">
-        <div class="list-title"><h2 id="list-heading">Firma listesi <span id="result-count"></span></h2><span id="sync-time" class="sync-time">İlk kayıt bekleniyor</span></div>
-        <div class="list-toolbar"><div class="search-box"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="m15 15 5 5"/></svg><input id="search" type="search" aria-label="Firma, kişi, sicil veya telefon ara" placeholder="Firma, kişi, sicil veya telefon ara…" autocomplete="off"><kbd>/</kbd></div><div class="filters" role="group" aria-label="Kayıtları filtrele"><button type="button" data-filter="all" aria-pressed="true">Tümü</button><button type="button" data-filter="waiting" aria-pressed="false">Beklenen</button><button type="button" data-filter="arrived" aria-pressed="false">Gelen</button><button type="button" data-filter="voted" aria-pressed="false">Oy kullanan</button><button type="button" data-filter="notes" aria-pressed="false">Notlu</button></div></div>
+        <div class="list-title"><h2 id="list-heading">Firmalar <span id="result-count"></span></h2><div class="list-meta"><span id="connection" class="connection" data-state="connecting"><i></i><span>Bağlanıyor</span></span><details id="tools-menu" class="tools-menu"><summary aria-label="Liste işlemleri ve çıkış"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></summary><div class="tools-popover"><span id="current-user" class="current-user"></span><button id="activity-open" type="button">Son işlemler</button><button id="export" type="button">Yedek indir</button><button id="print" type="button">Listeyi yazdır</button><button id="logout" type="button">Çıkış yap</button></div></details></div></div>
+        <div class="list-toolbar"><div class="search-box"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="m15 15 5 5"/></svg><input id="search" type="search" aria-label="Firma, kişi, sicil veya telefon ara" placeholder="Firma, kişi veya sicil ara" autocomplete="off"><kbd>/</kbd></div><div class="filters" role="group" aria-label="Kayıtları filtrele"><button type="button" data-filter="all" aria-pressed="true">Tümü</button><button type="button" data-filter="waiting" aria-pressed="false">Beklenen</button><button type="button" data-filter="arrived" aria-pressed="false">Gelen</button><button type="button" data-filter="voted" aria-pressed="false">Oy veren</button><button type="button" data-filter="notes" aria-pressed="false">Notlu</button></div></div>
         <div id="save-banner" class="save-banner" role="status" hidden><span id="save-message"></span><button id="retry-save" class="button small" type="button" hidden>Tekrar kaydet</button></div>
         <div id="connection-banner" class="connection-banner" role="status" hidden></div>
         <div class="table-scroll"><table><colgroup><col class="col-number"><col class="col-company"><col class="col-person"><col class="col-check"><col class="col-check"><col class="col-check"><col class="col-note"></colgroup><thead><tr><th scope="col">NO / SİCİL</th><th scope="col">FİRMA UNVANI</th><th scope="col">OY KULLANACAK KİŞİ</th><th scope="col" class="center">GELDİ</th><th scope="col" class="center">BELGE</th><th scope="col" class="center">OY</th><th scope="col" class="center">NOT</th></tr></thead><tbody id="records-body"></tbody></table><div id="empty-state" class="empty-state" hidden><strong>Eşleşen kayıt bulunamadı.</strong><p>Aramayı veya seçili filtreyi değiştirebilirsiniz.</p></div></div>
-        <div class="list-bottom"><span id="list-count"></span><span>İşlemden sonra “Kaydedildi” onayını bekleyin.</span></div>
+        <div class="list-bottom"><span id="list-count"></span><span id="sync-time" class="sync-time">Bağlanıyor</span></div>
       </section>
       <footer class="workspace-footer"><span>STSO 30. Komite · Ortak seçim takibi</span><span>Kaynak: 129 firmalık kontrol listesi</span></footer>
     </main>

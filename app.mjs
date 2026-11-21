@@ -43,7 +43,7 @@ function setConnection(ok, message = '') {
   $('#connection-banner').textContent = message || 'Ortak liste şu anda yenilenemiyor. Bağlantı gelince otomatik güncellenecek.';
   if (ok) {
     lastSync = Date.now();
-    $('#sync-time').textContent = `Son kontrol ${clock(lastSync)} · ${Math.round(pollInterval() / 1000)} sn`;
+    $('#sync-time').textContent = `Son kontrol ${clock(lastSync)}`;
   }
 }
 
@@ -83,7 +83,7 @@ function updateButtonAvailability() {
 
 function checkButton(record, field) {
   const waiting = pending.has(`${record.id}:${field}`);
-  return `<td class="check-cell"><button class="check-button${waiting ? ' pending' : ''}" role="switch" aria-checked="${record[field]}" data-check="${field}" data-id="${escapeHtml(record.id)}" aria-label="${escapeHtml(record.company)}: ${fieldNames[field]}${waiting ? ', kayıt bekleniyor' : ''}" ${!healthy || waiting ? 'disabled' : ''}><span aria-hidden="true">${waiting ? '·' : '✓'}</span><span class="mobile-check-label">${fieldNames[field]}</span></button></td>`;
+  return `<td class="check-cell"><button type="button" class="check-button${waiting ? ' pending' : ''}" role="switch" aria-checked="${record[field]}" data-check="${field}" data-id="${escapeHtml(record.id)}" aria-label="${escapeHtml(record.company)}: ${fieldNames[field]}${waiting ? ', kayıt bekleniyor' : ''}" ${!healthy || waiting ? 'disabled' : ''}><span class="check-mark" aria-hidden="true">${waiting ? '…' : record[field] ? '✓' : ''}</span><span class="mobile-check-label">${fieldNames[field]}</span></button></td>`;
 }
 
 function render() {
@@ -102,15 +102,17 @@ function render() {
   const percent = total ? Math.round(voted / total * 100) : 0;
   $('#stat-total').textContent = total;
   $('#stat-arrived').textContent = arrived;
-  $('#stat-waiting').textContent = `${total - arrived} firma bekleniyor`;
+  $('#stat-waiting').textContent = total - arrived;
   $('#stat-document').textContent = documents;
   $('#stat-voted').textContent = voted;
-  $('#stat-percent').textContent = `%${percent} katılım`;
-  $('#progress-value').style.width = `${percent}%`;
+  $('#stat-percent').textContent = `%${percent}`;
+  $('#progress-value').max = total || 1;
+  $('#progress-value').value = voted;
+  $('#progress-value').setAttribute('aria-valuetext', `${total} firmadan ${voted} firma oy kullandı, yüzde ${percent}`);
   $('#result-count').textContent = visible.length;
   $('#list-count').textContent = `${total} kayıttan ${visible.length} kayıt gösteriliyor`;
   $('#empty-state').hidden = Boolean(visible.length);
-  $('#records-body').innerHTML = visible.map(record => `<tr class="${record.arrived ? 'arrived-row' : ''}"><td><span class="record-number">${record.number}</span><span class="record-registry">${escapeHtml(record.registry)}</span></td><td class="company-cell"><span class="company-name">${escapeHtml(record.company)}</span>${record.sourceTruncated ? '<small class="source-truncated">Unvan kaynak belgede kısaltılmıştır.</small>' : ''}</td><td class="person-cell"><span class="person-name${record.voter ? '' : ' missing'}">${record.voter ? escapeHtml(record.voter) : '—'}</span>${record.phone ? `<a class="phone" href="tel:${record.phone.replace(/[^+\d]/g, '')}">${escapeHtml(record.phone)}</a>` : ''}</td>${['arrived', 'document', 'voted'].map(field => checkButton(record, field)).join('')}<td class="check-cell note-cell"><button type="button" class="note-button${record.note.trim() ? ' has-note' : ''}" data-note="${escapeHtml(record.id)}" data-id="${escapeHtml(record.id)}" aria-label="${escapeHtml(record.company)}: ${record.note ? 'notu düzenle' : 'not ekle'}" title="${escapeHtml(record.note || 'Not ekle')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 3h14v18H5zM8 8h8M8 12h8M8 16h5" stroke-linejoin="round" stroke-linecap="round"/></svg></button></td></tr>`).join('');
+  $('#records-body').innerHTML = visible.map(record => `<tr class="${record.arrived ? 'arrived-row' : ''}"><td class="record-meta"><span class="record-number">${record.number}</span><span class="record-registry">${escapeHtml(record.registry)}</span></td><td class="company-cell"><span class="company-name">${escapeHtml(record.company)}</span>${record.sourceTruncated ? '<small class="source-truncated" title="Unvan kaynak belgede kısaltılmıştır.">Kaynakta kısaltılmış unvan</small>' : ''}</td><td class="person-cell${!record.voter && !record.phone ? ' empty-person' : ''}"><span class="person-name${record.voter ? '' : ' missing'}">${record.voter ? escapeHtml(record.voter) : '—'}</span>${record.phone ? `<a class="phone" href="tel:${record.phone.replace(/[^+\d]/g, '')}">${escapeHtml(record.phone)}</a>` : ''}</td>${['arrived', 'document', 'voted'].map(field => checkButton(record, field)).join('')}<td class="check-cell note-cell"><button type="button" class="note-button${record.note.trim() ? ' has-note' : ''}" data-note="${escapeHtml(record.id)}" data-id="${escapeHtml(record.id)}" aria-label="${escapeHtml(record.company)}: ${record.note ? 'notu düzenle' : 'not ekle'}" title="${escapeHtml(record.note || 'Not ekle')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 3h14v18H5zM8 8h8M8 12h8M8 16h5" stroke-linejoin="round" stroke-linecap="round"/></svg><span class="note-label">Not</span></button></td></tr>`).join('');
   renderSaveStatus();
   renderActivity();
   checkOpenNote();
@@ -260,6 +262,7 @@ $('#show-password').addEventListener('click', () => {
 
 $('#logout').addEventListener('click', () => {
   if (pending.size) { toast('Önce bekleyen değişiklikleri kaydedin. Kaydedilmemiş işlemler varken çıkış yapılmadı.', true); return; }
+  $('#tools-menu').open = false;
   generation++; clearTimeout(pollTimer); clearTimeout(saveTimer);
   forgetSession(); session = null; store = null; data = null; healthy = false;
   $('#records-body').replaceChildren(); $('#activity-list').replaceChildren();
@@ -311,16 +314,18 @@ $('#note-load-current').addEventListener('click', () => {
 });
 for (const button of document.querySelectorAll('.close-dialog')) button.addEventListener('click', () => button.closest('dialog').close());
 $('#note-dialog').addEventListener('close', () => { noteContext = null; });
-$('#activity-open').addEventListener('click', () => $('#activity-dialog').showModal());
+$('#activity-open').addEventListener('click', () => { $('#tools-menu').open = false; $('#activity-dialog').showModal(); });
 $('#export').addEventListener('click', () => {
   if (!data) return;
+  $('#tools-menu').open = false;
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' });
   const url = URL.createObjectURL(blob); const link = document.createElement('a');
   link.href = url; link.download = `stso-kontrol-yedek-${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
   link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
   if (pending.size) toast('Yedek yalnızca onaylanmış kayıtları içeriyor. Bekleyen işlemleri ayrıca kaydedin.', true);
 });
-$('#print').addEventListener('click', () => window.print());
+$('#print').addEventListener('click', () => { $('#tools-menu').open = false; window.print(); });
+document.addEventListener('click', event => { if (!$('#tools-menu').contains(event.target)) $('#tools-menu').open = false; });
 document.addEventListener('visibilitychange', () => {
   clearTimeout(pollTimer);
   if (!document.hidden && session) refresh();
@@ -329,6 +334,7 @@ window.addEventListener('online', () => { if (session) refresh(); });
 window.addEventListener('offline', () => { if (session) { setConnection(false, 'İnternet bağlantısı kesildi. Kaydedilmemiş işlemler bekliyor.'); updateButtonAvailability(); } });
 window.addEventListener('beforeunload', event => { if (pending.size) { event.preventDefault(); event.returnValue = ''; } });
 document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') $('#tools-menu').open = false;
   if (event.key === '/' && session && !event.target.closest('input, textarea, select, dialog')) { event.preventDefault(); $('#search').focus(); }
 });
 
