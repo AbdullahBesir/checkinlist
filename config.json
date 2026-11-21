@@ -1,9 +1,50 @@
 {
   "version": 1,
-  "id": "",
+  "id": "77cce4e0-c789-4bae-898e-405a93009184",
   "title": "STSO 30. Komite",
   "eventDate": "2026-11-22",
-  "validUntil": "",
+  "validUntil": "2026-11-22T21:00:00.000Z",
   "pollIntervalMs": 3000,
-  "users": []
+  "users": [
+    {
+      "username": "besir",
+      "name": "besir",
+      "salt": "rfshoHVDO+IIIEpD7QnCZA==",
+      "iterations": 250000,
+      "iv": "pW/ROvnWtfi02VFl",
+      "vault": "kqmB5aO0Q+0Xfk4kT97aqEgcu7A883XeWZy/GnLAr1fK1TU3Pzb/CaGJer/4/SrgNmeG0RKNuBWElsX+jsBONPC0GIPvqSb+yUTNDsVzBf5Whcs57Kly4Sd2fASAsXCKwF1oDADOC4t+SChxc8xNcE7Mxijeip08cAx5Nn1Aexur1R+zyj3q6dxxuSTk6f3XatlMPlAbj8TTGmAa8BlHKxQJjotzz4NnYCsi+v0qtvh/yTiALZMkLmOT2cqRB0ZhJqNe8ds6MUVmR5YFu8X4AfpUYzljnez1J/J4sEPmWhGLrjqmyJ9FMxagdtm9zR9ekkVgNOICGTXqrlvpB9fhNdbtc+fLYhDmHMwKIxA52YI19uYOQmGjxbAOeVsh0ZTQn1KNZ/g2V4IM"
+    },
+    {
+      "username": "ensar",
+      "name": "ensar",
+      "salt": "2ei9tYifEBdJUWOezfCHzQ==",
+      "iterations": 250000,
+      "iv": "247zAcDqrW1LY9up",
+      "vault": "8CEr7J1F8E5FWSJprm2LOS2IbrPQ1DYP2EBFj1X0EYcqyNUepqFUkl2lIot5fudwzKVlHCLVQ8tdF+WjcLne2rZF3BVMDtIX2K7ULKdfDHgPf9my7y2JSj5d4nYNNQmAOgCxFlAXAxVj/IMHt297ZtGdcEKiEvxdacJJbFCFYwLuB5fMWtamCYN8ryYKdlVN4iSzY+qtm+SmzTyvkAMSlEolyiEbontlI/pvgfqfzhC8x4Vh7hZBCfHgNIHaqFGZ2ISwlDe8ike6Zti+B6IHRw3qk9ykvNTWkah3ioANsIzhRHtlxrzkzyWDRSBxkgSFcmeXeCOw78R+iRMOZ62ObIZEh9gj6TlcDvoX1w+ujl1iryKgxVvUyT9nm3FzUul/FRmZyjCbYEto"
+    },
+    {
+      "username": "yavuz",
+      "name": "yavuz",
+      "salt": "lRhXVOVa8clNj3BHDYO5LQ==",
+      "iterations": 250000,
+      "iv": "gT3x8V/hFpuRdXXp",
+      "vault": "rF8eobxKaIm3pwLes0CQnBJ3ygozsIU1D7S21N0ksrSzqxx+vmcN4z+JnTc6DmTOues3ICTu9G89y/X/RNEkShKB2dRCiUuHlFJLkHawxLcwUHgHeXssKIfQ7muXv85orjpm5qQYnDQth1RQSLcTp2hCTF/p2/VEZf4dqoAfit7MmP5IYwzkvKcUGam5O26duReBwuNy7Q0yAo3fatB9qM46isYEUh4QJD1xIgOQTSW+t7LFUNHm8WJOS3KtyaD2erDe2e9MKJEepwEk0ERtU05AWi5kRs130Xgv/PTMZMRMp+by83vU3L/DhQQBOZcn+NYEemoxEs++DBKBn8+ocEAqIJ23X1Lm4X+nlTnnAbVRPvgckIqbqazNiAgp4GdhhYYtlTS73pKj"
+    },
+    {
+      "username": "fahri",
+      "name": "fahri",
+      "salt": "87fMsBnxNWAtIIspGvfWxw==",
+      "iterations": 250000,
+      "iv": "kZfnuoyYlNRRHITY",
+      "vault": "dtOau8rKaML95PijS9XEgqP9X0exxfSUw3bkVeq0gkZdjoBDMQ1jrln9UoNwU31dqzSZlGk1ovo3NqJYJ+hgFqXJATEN9ZaHCm2fD316kXnYTce1DGRrq2+rJnENS15Y49jhK++zM1UBzQyx1Xa4gTNlH2RAtkRhVH9NS7/WDJWjc2CKrUCeTw0ZKp1wBF5YM2bQUumdF4gK31D8688tnsjETCbl66jqsUkbjM/C94llxhSBkBROBEC6zZgl9i3iZdFnstdGxhzjHC0ZubkY+vQIT815Z2JBpVARhXulr5vsS1kwQwIgSsAkEjo0d76rhsGMATXgGD2By/d3MzP8MebXlFkPAeVbPx0v24p3LErFiX5prNKSJ5Z59VNBOKwEHTk3d1EDbW0w"
+    },
+    {
+      "username": "kerim",
+      "name": "kerim",
+      "salt": "1q+dzx0buz4QrpUMq4ciIg==",
+      "iterations": 250000,
+      "iv": "vXO991l788hJa6PX",
+      "vault": "ybu+cL96ivXQw4+3rqaoq5ddDHkPpDt9O1AdUcvYuttB6bpc8z2Kzntsb9K63pcIh7AtxiK/s3ryCEfo/cF1S3U0yQ9tvRDpuShKCfZwL+XxX6jPhMej8t9Fh2w7ageOLf/2yyf5L2lsJP8hHKW3qa17dgFykjZIksfAT928BihO63P6daN6nyHFET1RlqKrE9KCltVusMEugeEJd4g9x6ogjbyCmBg7ZiR5E+/Svd4zk21lKEbhszoT/xcJtsyT1QjQJHWlTqAeubduZydU97mYwOta97gCSIPBEsY0ZEHTQ9xma+IYEHdvsHBjp4o9slAwR2C3re6PmGy8Y1hENaLOjb0TqF+jdKrpIbYvZ4TNmcl7reEBhOsZu9rbbxvfRyj87AN8nFRj"
+    }
+  ]
 }
