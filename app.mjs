@@ -1,5 +1,5 @@
 import { unlockUser, normalizeUsername } from './core/crypto.mjs';
-import { GitHubStore } from './core/github.mjs';
+import { GitHubStore } from './core/github.mjs?v=20261121-fetch-receiver';
 
 const $ = selector => document.querySelector(selector);
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));

@@ -9,7 +9,9 @@ export class GitHubStore {
   constructor(access, { fetcher = fetch, sleep = ms => new Promise(resolve => setTimeout(resolve, ms)), clock = () => Date.now() } = {}) {
     if (!/^[\w.-]+$/.test(access.owner) || !/^[\w.-]+$/.test(access.repo) || !access.path || !access.branch) throw new Error('GitHub depo ayarları eksik.');
     this.access = access;
-    this.fetcher = fetcher; this.sleep = sleep; this.clock = clock;
+    // Native browser fetch checks its receiver. Calling an unbound copy as
+    // this.fetcher(...) throws before the network request (Node tolerates it).
+    this.fetcher = fetcher.bind(globalThis); this.sleep = sleep; this.clock = clock;
     this.base = `https://api.github.com/repos/${encodeURIComponent(access.owner)}/${encodeURIComponent(access.repo)}`;
     this.url = `${this.base}/contents/${access.path.split('/').map(encodeURIComponent).join('/')}?ref=${encodeURIComponent(access.branch)}`;
     this.etag = null; this.snapshot = null; this.sha = null; this.retryAt = 0; this.tail = Promise.resolve(); this.lastWriteAt = 0;
