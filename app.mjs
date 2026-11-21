@@ -1,5 +1,5 @@
 import { unlockUser, normalizeUsername } from './core/crypto.mjs';
-import { GitHubStore } from './core/github.mjs?v=20261121-fetch-receiver';
+import { GitHubStore } from './core/github.mjs?v=20261121-fast-save';
 
 const $ = selector => document.querySelector(selector);
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
@@ -8,6 +8,7 @@ const defaultUsers = ['besir', 'ensar', 'yavuz', 'fahri', 'kerim'];
 const fold = value => value.toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ı/g, 'i');
 const clock = date => new Intl.DateTimeFormat('tr-TR', { timeZone: 'Europe/Istanbul', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(new Date(date));
 const pending = new Map();
+const SAVE_BATCH_DELAY_MS = 200;
 let config, session, store, data, filter = 'all', healthy = false, saving = false;
 let pollTimer, saveTimer, toastTimer, lastSync = 0, generation = 0, noteContext = null;
 
@@ -55,7 +56,7 @@ function queuePoll(delay = pollInterval()) {
 
 async function refresh() {
   if (!session || document.hidden) return;
-  if (saving) { queuePoll(); return; }
+  if (saving || [...pending.values()].some(entry => entry.status === 'queued')) { queuePoll(); return; }
   const active = generation;
   try {
     const next = await store.load();
@@ -73,17 +74,22 @@ async function refresh() {
   if (active === generation) queuePoll(Math.max(pollInterval(), (store.retryAt || 0) - Date.now()));
 }
 
-function updateButtonAvailability() {
-  for (const button of document.querySelectorAll('[data-check]')) {
+function updateButtonAvailability(recordId, field) {
+  const selector = recordId ? `[data-id="${CSS.escape(recordId)}"][data-check="${CSS.escape(field)}"]` : '[data-check]';
+  for (const button of document.querySelectorAll(selector)) {
     const key = `${button.dataset.id}:${button.dataset.check}`;
-    button.disabled = !healthy || pending.has(key);
+    const waiting = pending.has(key);
+    button.disabled = !healthy || waiting;
+    button.classList.toggle('pending', waiting);
+    button.setAttribute('aria-busy', String(waiting));
+    button.querySelector('.check-mark').textContent = waiting ? '…' : button.getAttribute('aria-checked') === 'true' ? '✓' : '';
   }
   $('#note-save').disabled = !healthy || Boolean(noteContext && pending.has(`${noteContext.id}:note`));
 }
 
 function checkButton(record, field) {
   const waiting = pending.has(`${record.id}:${field}`);
-  return `<td class="check-cell"><button type="button" class="check-button${waiting ? ' pending' : ''}" role="switch" aria-checked="${record[field]}" data-check="${field}" data-id="${escapeHtml(record.id)}" aria-label="${escapeHtml(record.company)}: ${fieldNames[field]}${waiting ? ', kayıt bekleniyor' : ''}" ${!healthy || waiting ? 'disabled' : ''}><span class="check-mark" aria-hidden="true">${waiting ? '…' : record[field] ? '✓' : ''}</span><span class="mobile-check-label">${fieldNames[field]}</span></button></td>`;
+  return `<td class="check-cell"><button type="button" class="check-button${waiting ? ' pending' : ''}" role="switch" aria-checked="${record[field]}" aria-busy="${waiting}" data-check="${field}" data-id="${escapeHtml(record.id)}" aria-label="${escapeHtml(record.company)}: ${fieldNames[field]}${waiting ? ', kayıt bekleniyor' : ''}" ${!healthy || waiting ? 'disabled' : ''}><span class="check-mark" aria-hidden="true">${waiting ? '…' : record[field] ? '✓' : ''}</span><span class="mobile-check-label">${fieldNames[field]}</span></button></td>`;
 }
 
 function render() {
@@ -125,7 +131,7 @@ function render() {
 function renderSaveStatus() {
   const failed = [...pending.values()].some(entry => entry.status === 'failed');
   $('#save-banner').hidden = !pending.size;
-  $('#save-message').textContent = failed ? `${pending.size} değişiklik henüz kaydedilmedi. ${[...pending.values()].find(entry => entry.error)?.error || 'Bağlantıyı kontrol edip tekrar deneyin.'}` : `${pending.size} değişiklik kaydediliyor… GitHub onayı bekleniyor.`;
+  $('#save-message').textContent = failed ? `${pending.size} değişiklik henüz kaydedilmedi. ${[...pending.values()].find(entry => entry.error)?.error || 'Bağlantıyı kontrol edip tekrar deneyin.'}` : `${pending.size} değişiklik kaydediliyor…`;
   $('#retry-save').hidden = !failed;
   $('#retry-save').disabled = saving || (store?.retryAt || 0) > Date.now();
 }
@@ -135,8 +141,10 @@ function stage(record, field, value, expectedVersion = record.versions[field]) {
   if (pending.has(key)) return null;
   const operation = { opId: crypto.randomUUID(), recordId: record.id, field, value, expectedVersion };
   pending.set(key, { operation, status: 'queued' });
-  if (!saveTimer) saveTimer = setTimeout(flush, 850);
-  render();
+  clearTimeout(pollTimer);
+  if (!saveTimer && !saving) saveTimer = setTimeout(flush, field === 'note' ? 0 : SAVE_BATCH_DELAY_MS);
+  updateButtonAvailability(record.id, field);
+  renderSaveStatus();
   return operation.opId;
 }
 
@@ -179,7 +187,7 @@ async function flush() {
       saving = false;
       render();
       updateButtonAvailability();
-      if ([...pending.values()].some(entry => entry.status === 'queued')) saveTimer = setTimeout(flush, 1100);
+      if ([...pending.values()].some(entry => entry.status === 'queued')) saveTimer = setTimeout(flush, 0);
       queuePoll(Math.max(pollInterval(), (store.retryAt || 0) - Date.now()));
     }
   }

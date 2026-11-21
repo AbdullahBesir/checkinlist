@@ -155,6 +155,7 @@ tbody tr:hover { background: #fbfdfb; }
 .workspace-footer { display: flex; justify-content: space-between; gap: 15px; padding: 22px 0; font-size: 11px; color: #8a9b8e; }
 .save-banner, .connection-banner { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 20px; background: #fff8e7; color: #805d24; font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
 .connection-banner { background: #f8f5eb; }
+.save-banner { position: fixed; bottom: calc(16px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 40; width: calc(100% - 24px); max-width: 540px; margin: 0; border: 1px solid #e2d7af; border-radius: 10px; box-shadow: 0 6px 24px #193d3320; }
 
 /* Notes stay usable with the phone keyboard open. */
 .dialog { border: 1px solid var(--line); border-radius: 15px; padding: 25px; max-width: 560px; width: calc(100% - 28px); max-height: calc(100dvh - 28px); overflow: auto; color: var(--ink); box-shadow: 0 20px 80px #14392d33; }
@@ -196,7 +197,7 @@ tbody tr:hover { background: #fbfdfb; }
   .top-divider, .current-user { display: none; }
   .connection { font-size: 11px; }
   .text-button { font-size: 12px; padding: 7px 5px; }
-  .workspace { padding: 18px 12px 0; }
+  .workspace { padding: 18px 12px calc(84px + env(safe-area-inset-bottom)); }
   .page-heading { margin-bottom: 15px; }
   .page-heading h1 { font-size: 25px; margin-top: 4px; }
   .page-heading .eyebrow { font-size: 11px; }
@@ -247,6 +248,7 @@ tbody tr:hover { background: #fbfdfb; }
   .list-bottom > span:last-child { text-align: right; max-width: 145px; }
   .workspace-footer { display: none; }
   .save-banner, .connection-banner { border: 1px solid #e9dfbf; border-radius: 9px; padding: 10px 12px; margin-bottom: 11px; font-size: 13px; }
+  .save-banner { margin-bottom: 0; }
   .dialog { padding: 19px; }
   .dialog h2 { font-size: 20px; }
   .dialog-actions { position: sticky; bottom: -19px; margin-bottom: -19px; padding-bottom: calc(19px + env(safe-area-inset-bottom)); background: white; }

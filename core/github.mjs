@@ -118,7 +118,11 @@ export class GitHubStore {
   commit(operations, actor) {
     return this.exclusive(async () => {
       for (let attempt = 0; attempt < 6; attempt++) {
-        const current = await this.read(true);
+        // The blob SHA is an atomic compare-and-swap at GitHub. Use the
+        // confirmed snapshot first; refetch after a conflict or uncertain PUT.
+        const current = attempt === 0 && this.snapshot && this.sha
+          ? this.snapshot
+          : await this.read(true);
         const result = applyOperations(current, operations, actor);
         if (!result.changed) return result;
         // GitHub recommends at least one second between mutating requests.
